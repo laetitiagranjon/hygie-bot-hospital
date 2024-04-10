@@ -1,15 +1,14 @@
 import pyaudio
 import wave
 from datetime import datetime
-import numpy as np
-import noisereduce as nr
 
 # Paramètres de l'audio
-FORMAT = pyaudio.paInt16
-CHANNELS = 1
-RATE = 44100
-CHUNK = 1024
-RECORD_SECONDS = 5
+FORMAT = pyaudio.paInt16  # Format des données audio
+CHANNELS = 1              # Mono
+RATE = 44100              # Taux d'échantillonnage
+CHUNK = 1024              # Taille des blocs de lecture
+RECORD_SECONDS = 5        # Durée d'enregistrement
+# Générer un nom de fichier unique avec un horodatage
 WAVE_OUTPUT_FILENAME = f"output_{datetime.now().strftime('%Y%m%d_%H%M%S')}.wav"
 
 audio = pyaudio.PyAudio()
@@ -28,18 +27,29 @@ for i in range(0, int(RATE / CHUNK * RECORD_SECONDS)):
 stream.stop_stream()
 stream.close()
 
-# Convertir les frames en Array NumPy pour la réduction du bruit
-audio_data = np.frombuffer(b''.join(frames), dtype=np.int16)
-
-# Appliquer la réduction du bruit
-reduced_noise_audio_data = nr.reduce_noise(y=audio_data, sr=RATE)
-
 # Sauvegarde
 wf = wave.open(WAVE_OUTPUT_FILENAME, 'wb')
 wf.setnchannels(CHANNELS)
 wf.setsampwidth(audio.get_sample_size(FORMAT))
 wf.setframerate(RATE)
-wf.writeframes(reduced_noise_audio_data.astype(np.int16).tobytes())
+wf.writeframes(b''.join(frames))
 wf.close()
 
 print(f"Enregistrement terminé, fichier sauvegardé sous : {WAVE_OUTPUT_FILENAME}")
+
+# Lecture
+print("Début de la lecture...")
+wf = wave.open(WAVE_OUTPUT_FILENAME, 'rb')
+stream = audio.open(format=audio.get_format_from_width(wf.getsampwidth()),
+                    channels=wf.getnchannels(),
+                    rate=wf.getframerate(),
+                    output=True)
+data = wf.readframes(CHUNK)
+
+while data:
+    stream.write(data)
+    data = wf.readframes(CHUNK)
+
+stream.stop_stream()
+stream.close()
+audio.terminate()
