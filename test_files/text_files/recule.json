@@ -1,0 +1,11 @@
+{
+    "commandId": "001",
+    "timestamp": "2024-04-14T10:00:00Z",
+    "intent": "moveBackward",
+    "parameters": {
+      "direction": "straight",
+      "distance": "unspecified"
+    },
+    "source": "voiceCommand",
+    "commandText": "recule"
+  }
