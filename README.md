@@ -45,3 +45,6 @@ Assurez-vous que votre robot est assemblé correctement avec les composants suiv
 
 Sur l'image, vous pouvez voir le robot partiellement construit. Il manque le capteur et le micro. 
 ![Robot](hygie_bot_picture.jpeg "Voici le robot partiellement construit")
+
+## Utilisation
+Une fois le Raspberry Pi configuré et les moteurs connectés, vous pouvez tester les fonctions de déplacement du robot.
